@@ -5,59 +5,61 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hporta-c <hporta-c@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/15 17:05:36 by hporta-c          #+#    #+#             */
-/*   Updated: 2025/10/15 20:17:08 by hporta-c         ###   ########.fr       */
+/*   Created: 2025/10/22 08:38:50 by hporta-c          #+#    #+#             */
+/*   Updated: 2025/10/22 11:40:38 by hporta-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ARGO_H
 # define ARGO_H
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <ctype.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-/* ---------- 枚举：JSON 类型 ---------- */
-typedef enum e_type
-{
-    INTEGER,
-    STRING,
-    MAP
-} e_type;
-
-typedef struct s_json t_json;
 typedef struct s_pair t_pair;
 typedef struct s_map t_map;
+typedef struct s_json t_json;
 
-/* ---------- map 和 pair 结构 ---------- */
+typedef	enum
+{
+	STRING,
+	INTEGER,
+	MAP
+}		type;
 
 typedef struct s_map
 {
-    t_pair *pair;
-    size_t size;
-}               t_map;
+	t_pair *pair;
+	int 	size;
+}				t_map;
 
-/* ---------- json 结构 ---------- */
-typedef struct s_json 
+typedef struct s_json
 {
-    e_type type;
-    union {
-        int    integer;
-        char  *string;
-        t_map    map;
-    };
-}              t_json;
+	union {
+		char *string;
+		int	integer;
+		t_map map;
+	};
+	type	type;
+	
+}				t_json;
 
-typedef struct  s_pair 
+typedef struct s_pair
 {
-    char *key;
-    t_json value;
-}               t_pair;
+	char *key;
+	t_json val;
+}			t_pair;
 
-int argo(t_json *res, FILE *stream);
-int parse_value(t_json *res, FILE *stream);
-void    free_json(t_json js);
+int	peek(FILE *stream);
+void	unexpected(FILE *stream);
+int	accept(FILE *stream, char c);
+int	expect(FILE *stream, char c);
+int	skip_whitespace(FILE *file);
+void	destroy_pair(t_pair *pair, int size);
+void	free_json(t_json js);
+void print_js(t_json js, int indent);
+int	parse_value(FILE *file, t_json *js);
 
 #endif

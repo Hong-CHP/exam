@@ -5,39 +5,41 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hporta-c <hporta-c@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/15 15:02:30 by hporta-c          #+#    #+#             */
-/*   Updated: 2025/10/15 15:18:18 by hporta-c         ###   ########.fr       */
+/*   Created: 2025/10/22 14:55:52 by hporta-c          #+#    #+#             */
+/*   Updated: 2025/10/22 15:45:05 by hporta-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VBC_H
-# define VBC_H
+#define VBC_H
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-typedef struct s_parse
+typedef enum
 {
-    char *input;
-    int    pos;
-}               t_parse;
+	ADD,
+	MULTI,
+	VAL	
+}	type;
 
-typedef struct s_tree
+typedef struct node
 {
-    enum
-    {
-        ADD,
-        MULTI,
-        VAL,
-    }   type;
-    int val;
-    struct s_tree *left;
-    struct s_tree *right; 
-}               t_tree;
+	type type;
+	int val;
+	struct node*	l;
+	struct node*	r;
+}	node;
 
-t_tree  *parse_expr(t_parse *vbc);
-t_tree  *parse_term(t_parse *vbc);
-t_tree  *parse_factor(t_parse *vbc);
+int accept(char **s, char c);
+void    unexpected(char c);
+int expect(char **s, char c);
+void    destroy_tree(node *n);
+int eval_tree(node *tree);
+node    *parse_expr(char **s);
+node	*parse_term(char **s);
+node	*parse_factor(char **s);
+
 
 #endif
