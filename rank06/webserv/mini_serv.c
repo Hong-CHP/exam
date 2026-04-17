@@ -78,21 +78,28 @@ int main(int argc, char **argv) {
             int clientFd = accept(listenFd, (struct sockaddr*)&cli_addr, &sizeof(cli_addr));
             FD_SET(clientFd, &readset);
             client_ids[clientFd] = count++;
-            sprintf(buf_write, "server: client %d just arrived\n", client_ids[clien])
+            sprintf(buf_write, "server: client %d just arrived\n", client_ids[clientFd]);
             max_fd = clientFd > max_fd ? clientFd : max_fd;
         }
         for (int i = 0; i < max_fd + 1; ++i) {
             if (i != listenFd && FD_ISSET(clientFd, &readTemp)) {
-                int len = recv(i, buf_read, sizeof(buf_read), 0);
-                if (len > 0) {
-                    send(i, buf, sizeof(buf), 0);
+            	int lenRead = recv(i, buf_read, sizeof(read), 0);
+                if (lenRead > 0) {
+                    int lenSend = send(i, buf_write, sizeof(buf_wirte), 0);
                     
                 }
-                else if (len == 0) {
-                    sprintf(buf_)
+                else if (lenRead == 0) {
+                    sprintf(buf_write, "server: client %d just left\n", client_ids[clientFd]);
+              	    FD_CLR(clientFd, &readtemp);
+              	    close(clientFd);
+		    close(listenFd);
+		    break;
                 }
                 else {
-
+		    FD_CLR(clientFd, &readtemp);
+              	    close(clientFd);
+		    close(listenFd);
+		    break; 
                 }
             }
         }
