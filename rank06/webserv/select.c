@@ -74,7 +74,7 @@ int main()
             struct sockaddr_in cliaddr;
             int cliLen = sizeof(cliaddr);
             int cfd = accept(lfd, (struct sockaddr*)&cliaddr, &cliLen);
-
+ 
             // 得到了有效的文件描述符
             // 通信的文件描述符添加到读集合
             // 在下一轮select检测的时候, 就能得到缓冲区的状态

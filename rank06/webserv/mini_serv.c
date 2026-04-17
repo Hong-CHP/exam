@@ -30,8 +30,6 @@ void fatal_error() {
     exit 1;
 }
 
-
-
 int main(int argc, char **argv) {
     if (argc != 2) {
         write(2, "Wrong number of arguments\n", 26);
@@ -40,9 +38,11 @@ int main(int argc, char **argv) {
     if (valid_port(argv[1]))
         fatal_error();
     int port = atoi(argv[1]);
+
     int listenFd = socket(AF_INET, SOCK_STREAM, 0); 
     if (listenFd == -1)
         fatal_error();
+    
     const struct sockaddr_in serv_addr;
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
@@ -57,24 +57,44 @@ int main(int argc, char **argv) {
         fatal_error();
     }
 
-    fd_set rset, rtemp;
+    int     client_ids[65536];
+    char    *messages[65536];
+    int     count = 0;
+    char    buf_read[1024];
+    char    buf_write[1024];
+    fd_set readset, readtemp;
     int max_fd = listenFd;
-
-    FD_ZERO(&rset);
-    FD_SET(listenFd, &rset);
+    FD_ZERO(&readset);
+    FD_SET(listenFd, &readset);
     while (1) {
-        rtemp = rset;
-        int num = select(max_fd + 1, &rtemp, NULL, NULL, NULL);
+        readtemp = readset;
+        int num = select(max_fd + 1, &readtemp, NULL, NULL, NULL);
         if (num == -1) {
             close(listenFd);
             fatal_error();
         }
-        if (FD_ISSET(listenFd, &rtemp)) {
+        if (FD_ISSET(listenFd, &readtemp)) {
             struct sockaddr_in cli_addr;
-            int cli_len = sizeof(cli_addr);
-            int cfd = accept(listenFd, (struct sockaddr*)&cli_addr, &cli_len);
-            FD_SET(cfd, &rset);
-            
+            int clientFd = accept(listenFd, (struct sockaddr*)&cli_addr, &sizeof(cli_addr));
+            FD_SET(clientFd, &readset);
+            client_ids[clientFd] = count++;
+            sprintf(buf_write, "server: client %d just arrived\n", client_ids[clien])
+            max_fd = clientFd > max_fd ? clientFd : max_fd;
+        }
+        for (int i = 0; i < max_fd + 1; ++i) {
+            if (i != listenFd && FD_ISSET(clientFd, &readTemp)) {
+                int len = recv(i, buf_read, sizeof(buf_read), 0);
+                if (len > 0) {
+                    send(i, buf, sizeof(buf), 0);
+                    
+                }
+                else if (len == 0) {
+                    sprintf(buf_)
+                }
+                else {
+
+                }
+            }
         }
     }
     return 0;
