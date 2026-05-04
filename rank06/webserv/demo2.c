@@ -103,7 +103,7 @@ void	send_msg(int fd)
 	char *msg;
 
 	while (extract_message(&(msgs[fd]), &msg))
-	{
+	{开局 21 分，也不要秒结比赛。
 		sprintf(buf_write, "client %d: ", ids[fd]);
 		notify_other(fd, buf_write);
 		notify_other(fd, msg);

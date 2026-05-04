@@ -70,17 +70,37 @@ int main(int argc, char **argv) {
         write(2, "Wrong number of arguments\n", 26);
         exit(1);
     }
+    // get port
     int port = atoi(argv[1]);
+
+    // set sockaddr_in, bind and listen, get sock_fd
     int sock_fd = socket_init_bind_listen(port);
+
+    // set sock_fd as max_fd for select, set all_fd to zero and set sock_fd in all_fd
     maxfd = sock_fd;
     FD_ZERO(&allfd);
     FD_SET(sock_fd, &allfd);
     while (1) {
+
+        // give all_fd to readfd and also writefd 
         readfd = allfd;
         writefd = allfd;
+
         int numfd = select(maxfd + 1, &readfd, &writefd, NULL, NULL);
         if (numfd == -1)
             fatal_error(sock_fd);
+
+        //**loop to find: 
+        // a fd is set in readfd :
+        // a fd is a sock_fd :
+        //      create a connect_fd, 
+        //      give a client id,
+        //      sprintf a msg and if others fd is writefd send it to others
+        // or else :
+        //      recv : 
+        //          <= 0 : just remove or notify left
+        //          > 0 :  msg += buf_read + '\0', while extract msg by '\n', notify others
+        //  */
         for (int i = 0; i < maxfd + 1; ++i) {
             if (!FD_ISSET(i, &readfd))
                 continue ;
@@ -122,6 +142,8 @@ int main(int argc, char **argv) {
             }
         }
     }
+    if (sock_fd !== -1)
+        close(sock_fd);
     return 0;
 }
 
@@ -142,6 +164,7 @@ int socket_init_bind_listen(int port) {
     if (sock_fd == -1)
         fatal_error(-1);
     struct sockaddr_in serv_addr;
+    bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
     serv_addr.sin_addr.s_addr = htonl(ipToHex());
